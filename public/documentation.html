@@ -11,5 +11,94 @@
     <p>This API will be dealing with requests to the database of the "myFlix" application. <br>
     It will provide data about movies, genres, directors.  <br>
     Using the application user will be able to sign up. Therefore the api will also deal with user interactions with the database, e.g. updating their personal information.</p>
+  
+    <table class="table table-hover table-bordered">
+      <h1 class="head-table">Endpoint Documentation</h1> 
+      <thead>
+          <tr>
+              <th scope="col">Description</th>
+              <th scope="col">Method</th>
+              <th scope="col">URL</th>
+              <th scope="col">Query Parameter</th>
+              <th scope="col">Body of Request</th>
+              <th scope="col">body of Response</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <td scope="row">Return the documentation html</td>
+              <td>GET</td>
+              <td>/documentation.html</td>
+              <td>none</td>
+              <td>none</td>
+              <td>A response containing the documentation html</td>
+          </tr>
+          <tr>
+              <td scope="row">Return a list of all the movies to the users</td>
+              <td>GET</td>
+              <td>/movies</td>
+              <td>none</td>
+              <td>none</td>
+              <td>A JSON object holding data about all the movies</td>
+          </tr>
+          <tr>
+              <td scope="row">Return data about a single movie by title</td>
+              <td>GET</td>
+              <td>/movies/:title</td>
+              <td>title</td>
+              <td>none</td>
+              <td>A JSON object holding data about the title of the requested movie</td>     
+          </tr>
+          <tr>
+               <td scope="row">Return data about a genre (description) by name/title (e.g., "Thriller")</td>
+               <td>GET</td>
+               <td>/movies/:genre</td>
+               <td>genre</td>
+               <td>none</td>
+               <td><em>e.g.</em><br>Iron Man is a 2008 superhero film, based on the Marvel Comics superhero of the same name. It is the first installment in the Marvel Cinematic Universe and the first installment of Phase One.</td>
+          </tr>
+          <tr>
+               <td scope="row">Return data about a director (bio, birth year, death year) by name</td>
+               <td>GET</td>
+               <td>/movies/director/:name</td>
+               <td>name</td>
+               <td>none</td>
+               <td><em>e.g.</em><br>born in 1966. He is an American actor, director, producer, and screenwriter.</td>
+
+          </tr>
+           <tr>
+              <td scope="row">Add a movie</td>
+              <td>POST</td>
+              <td>/movies</td>
+              <td>none</td>
+              <td>A JSON object holding data about the movies to add, structured like <p>{ <br> title: "Avengers", <br> genres: { <br> name:"" <br> } <br> director: { <br> name:"" <br> }, </p> </td>
+              <td>A JSON object holding data about the movie that was added, <p>{ <br> title: "Avengers", <br> genres: { <br> name:"" <br> } <br> director: { <br> name:"" <br> }, </p> </td>
+          </tr>
+          <tr>
+              <td scope="row">Remove a movie by title</td>
+              <td>DELETE</td>
+              <td>/movies/:title</td>                 
+              <td>title</td>
+              <td>none</td>
+              <td>A text message indicating whether the movie was successfully removed</td>
+          </tr>
+          <tr>
+              <td scope="row">Allow new users to register</td>
+              <td>POST</td>
+              <td>/users</td>
+              <td>none</td>
+              <td>A JSON object holding data about the users, who registerd <p>{ <br> Username: string <br> Password: string <br> Email: String <br> } </p></td>
+              <td>A response that zhe account has been created</td>
+          </tr>
+          <tr>
+              <td scope="row">Allow users to update thier info such as their username or email address</td>
+              <td>PUT</td>
+              <td>/user/:Username</td>
+              <td>Username</td>
+              <td>A JSON object holding data about the users, who registerd <p>{ <br> Username: string <br> Password: string <br> Email: String <br> } </p></td>
+              <td>A response that contain the users update information</td>
+          </tr>
+
+  
   </body>
 </html>
