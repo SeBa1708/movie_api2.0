@@ -1,178 +1,221 @@
+//Integrating Mongoose with the REST API
+const mongoose = require('mongoose');
+const models = require('./models.js');
+const movies = models.movie;
+const users = models.user;
+const directors = models.director;
+
+
 //Import express and create the server
 const express = require('express'),
-		morgan = require('morgan'),
-		bodyParser = require('body-parser');
+	  morgan = require('morgan'),
+	  bodyParser = require('body-parser');
 const { parse } = require('uuid');
-
+	  
 const app = express();
 
 app.use(bodyParser.json());
 
-let topMovies = [
-	{
-		title: 'Casino',
-		description: 'They had everything and lost it because of abuse of power, intrigue and greed.',
-		genre: 'Drama',
-		director: {
-			name: 'Martin Scorsese', 
-			bio: 'born November 17, 1942) is an American film director, producer, screenwriter, and actor.'
-		}
-	},
-	{
-		title: 'Scarface',
-		description: 'In 1980, Cuban refugee and ex-convict Tony Montana arrives in Miami, Florida, as part of the Mariel boatlift, where he is sent to a refugee camp with friends Manny Ray, Angel, and Chi Chi.',
-		genre: 'Crime',
-		director: {
-			name: 'Brian de Palma', 
-			bio: 'born September 11, 1940) is an American film director and screenwriter.'
-		}
-	},
-	{
-		title: 'Little Miss Sunshine',
-		description: 'Little Miss Sunshine is a 2006 American tragicomedy[2][3][4][5][6][7] road film and the directorial debut of the husband-wife team of Jonathan Dayton and Valerie Faris.  ',
-		genre: 'Tragiccomedy',
-		director: {
-			name: 'Jonathan Dayton', 
-			bio: 'Jonathan Dayton (born July 7, 1957) and Valerie Faris (born October 20, 1958) are a team of American film and music video directors who received critical acclaim for their feature film directorial debut, Little Miss Sunshine (2006).'
-		}
-	},
-	{
-		title: 'Batman Begins',
-		description: 'As a child in Gotham City, Bruce Wayne falls down a dry well and is attacked by a swarm of bats, developing a fear of them. ',
-		genre: 'Fantasy',
-		director: {
-			name: 'Christopher Nolan', 
-			bio: 'born 30 July 1970) is a British-American film director, producer, and screenwriter'
-		}
-	},
-	{
-		title: 'Wolf of Wallstreet',
-		description: '',
-		genre: 'Biography, Crime, Drama',
-		director: {
-			name: 'Martin Scorsese', 
-			bio: 'born November 17, 1942) is an American film director, producer, screenwriter, and actor.'
-		}
-	},
-	{
-		title: 'Reservoir Dogs',
-		description: 'Eight men eat breakfast at a Los Angeles diner before carrying out a diamond heist.',
-		genre: 'Crime, Drama, Thriller',
-		director: {
-			name: 'Quentin Tarantino', 
-			bio: 'born March 27, 1963)[2] is an American film director, screenwriter, producer, and actor.'
-		}
-	},
-	{
-		title: 'The usual suspects',
-		description: 'Hardened criminal Dean Keaton lies badly wounded on a ship docked in San Pedro Bay. He is confronted by a mysterious figure whom he calls Keyser, who shoots him dead and sets fire to the ship.',
-		genre: 'Crime, Mystery, Thriller',
-		director: {
-			name: 'Bryan Singer', 
-			bio: 'Bryan Singer was born on September 17, 1965 in New York City, New York, USA as Bryan Jay Singer. '
-		}
-	},
-	{
-		title: 'Fight Club',
-		description: 'A nameless first person narrator (Edward Norton) attends support groups in attempt to subdue his emotional state and relieve his insomniac state.',
-		genre: 'Drama',
-		director: {
-			name: 'David Fincher', 
-			bio: 'David Fincher was born in 1962 in Denver, Colorado, and was raised in Marin County, California.'
-		}
-	},
-	{
-		title: 'Knives Out',
-		description: 'A detective investigates the death of a patriarch of an eccentric, combative family.',
-		genre: 'Comedy, Crime, Drama',
-		director: {
-			name: 'Rian Johnson', 
-			bio: 'Rian Johnson was born in Maryland and at a young age his family moved to San Clemente, California, where he was raised. '
-		}
-	},
-	{
-		title: 'Trainspotting',
-		description: 'Renton, deeply immersed in the Edinburgh drug scene, tries to clean up and get out, despite the allure of the drugs and influence of friends.',
-		genre: 'Drama',
-		director: {
-			name: 'Danny Boyle', 
-			bio: 'Danny Boyle was born on October 20, 1956 in Radcliffe, Greater Manchester, England as Daniel Francis Boyle'
-		}
-	}
+// This allows Mongoose to connect to that database so it can perform CRUD operations on the documents it contains from within your REST API
 
-];
+mongoose.connect('mongodb://localhost:27017/myFlixDatabase', { useNewUrlParser: true, useUnifiedTopology: true });
 
-// Using middleware 
+// 1. General requests
 
-//get the top 10 movies
-app.get('/movies', (req, res) => {
-	res.json(topMovies);
-});
-
-//get the starting request
-app.get('/', (req, res) => {
-	res.send('Welcome to myFlex movies!');
-});
-
-//Get the documentation
+//1.1 Return the documentation html
 app.use(express.static('public'));
 app.get('/documentation', (req, res) => {
 	        res.sendFile('public/documentation.html', {root: __dirname});
 });
 
-//Allow users to update their user info (username)
-app.put('/users/:username', (req, res) => {
-	res.status(201).send('user has changed his name');	
+//1.2 get the starting request
+app.get('/', (req, res) => {
+	res.send('Welcome to myFlex movies!');
 });
 
 
+// 2. Movie related requests 
 
-//Return data (description, genre, director) about a single movie 
+// 2.1 Return a list of ALL movies to the user 
+app.get('/movies', (req, res) => {
+	movies.find() // movies comes from the Database 
+	.then((movies) => {
+
+		res.status(201).json(movies);
+	})
+	.catch((err) => {
+		console.error(err);
+		res.status(500).send('error: ' + err);
+	});
+});
+
+
+// 2.2 Return data (description, genre, director, image URL, whether its featured or not) about a single movie
 app.get('/movies/:title', (req, res) => {
-	res.json(topMovies.find((movie) =>
-		{return movie.title === req.params.title}));
+	movies.findOne({Title: req.params.title})
+		.then((movie) => {
+		res.json(movie);
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(500).send('Error: ' + err);
+		});
 });
 
 
-// EndPoint 3 - Return data about a genre (description) by name/title (e.g., "Thriller")
-app.get('/movies/genres/:genre', (req, res) => {
-	res.json('Successful GET request returning a description of the genre');
-  });
-
-//Return data about a director (bio, birth year, death year) by name
-app.get('/movies/:director/:name', (req, res) => {
-	res.send('Successful GET request returning data information about the director');
-  });
-
-//Allow users to add a movie to their list of favorites (showing only a text that a movie has been added
-app.post('/movies/', (req, res) => {
-	let newMovie = req.body;
-	if (!newMovie.title) {
-		const message = 'Missing movie title in the request body';
-		res.status(400).send(message);
-	} else {
-		topMovies.push(newMovie);
-		res.status(201).send(newMovie);
-	}
+// 2.3 Return data about a genre (description) by name/title (e.g., "Action")
+app.get('/movies/genre/:name', (req, res) => {
+	movies.findOne({'Genre.Name': req.params.name})
+	.then((movie) => {
+		res.json(movie.Genre);
+	})
+	.catch((err) => {
+		console.error(err);
+		res.status(500).send('Error: ' +err);
+	});
 });
 
-//Allow users to remove a movie from their list of favorites (showing only a text that a movie has been removed
-app.delete('/movies/:title', (req, res) => {
-	let movie = topMovies.find((movie) => {return movie.title === req.params.title});
-	if (movie) {
-		movies = topMovies.filter((obj) => {return obj.title !== req.params.title});
-		res.status(201).send('Movie ' + req.params.title + ' was deleted.');
-		
-	}
+// 2.4 Return data about a director (bio, birth year, death year) by name
+app.get('/movies/director/:Name', (req, res) => {
+	movies.findOne({'Director.Name': req.params.Name})
+		.then((director) => {
+			res.json(director.Director);
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(500).send('Error: ' + err);
+		});
 });
 
-//logs into the Terminal using morgan 
+
+// 3. User-related requests 
+
+// 3.1 Allow new users to register
+app.post('/users', (req, res) => {
+	users.findOne({ Username: req.body.Username })
+		.then((user) => {
+			if (user) {
+				return res.status(400).send(req.body.Username + ' already exists');
+			} else {
+				Users.create({
+					Username:req.body.Username,
+					Password: req.body.Password,
+					Email: req.body.Email,
+					Birthday: req.body.Birthday
+				}) 
+				.then((user) => {res.status(201).json(user) })
+			.catch((error) => {
+				console.error(error);
+				res.status(500).send('Error: ' + error);
+			 })
+			}
+		  })
+		  .catch((error) => {
+			  console.error(error);
+			  res.status(500).send('Error: ' + error);
+		   });  
+	
+});
+
+// 3.2 delete a user by Username
+app.delete('/users/:Username', (req, res) => {
+	Users.findOneAndRemove({ Username: req.params.Username})
+	.then((user) => {
+		if(!user) {
+			res.status(400).send(req.params.Username + ' was not found');
+		} else {
+			res.status(200).send(req.params.Username + ' was deleted.');
+		}
+	})
+	.catch((err) => {
+		console.error(err);
+		res.status.status(500).send(' Error: ' + err);
+	});
+});
+
+// 3.3 Get all users
+app.get('/users', (req, res) => {
+	Users.find()
+	.then((users) => {
+		res.status(201).json(users);
+	})
+	.catch((error) => {
+		console.error(err);
+		res.status(500).send('Error: ' + err);
+	});
+});
+
+// 3.4 Get a user by username
+app.get('/users/:Username', (req, res) => {
+	Users.findOne({Username:req.params.Username})
+		.then((user) => {
+			res.json(user);
+		})
+		.catch((err) => {
+			console.error(err);
+			res.status(500).send('Error: ' + err);
+		});
+});
+
+// 3.5 Allow users to update their user info
+app.put('/users/:Username', (req, res) => {
+	Users.findOneAndUpdate({ Username: req.params.Username},
+		{$set:
+			{ Username: req.body.Username,
+			  Password: req.body.Password,
+			  Email: req.body.Email,
+			  Birthday: req.body.Birthday
+			}
+		},
+		{ new: true},
+		(err, updatedUser) => {
+			if(err) {
+				console.error(err);
+		                res.status(500).send('Error: ' + err);
+			} else {
+				res.json(updatedUser);
+			}
+		});
+});
+
+// 3.6 Add a movie to a user's list of favorites
+app.post('/users/:Username/movies/:movieID', (req, res) => {
+	Users.findOneAndUpdate({Username: req.params.Username},
+		{ $addToSet: { Favoritemovies: req.params.movieID} },
+		{new: true},
+		(err, updatedUser) => {
+			if (err) {
+				console.error(err);
+				res.status(500).send('Error: ' + err);
+			} else {
+				res.json(updatedUser);
+			}
+		});
+});
+
+
+//3.7 Remove a movie from a user's list of favorites
+app.delete('/users/:Username/movies/:movieID', (req, res) => {
+	Users.findOneAndUpdate({Username: req.params.Username},
+       		 { $pull: { FavoriteMovies: req.params.MovieID} },
+                 {new: true},
+                 (err, updatedUser) => {
+                        if (err) {
+	                        console.error(err);
+	                        res.status(500).send('Error: ' + err);
+			} else {res.json(updatedUser);
+	                }
+	        });
+});
+
+
+//logs into the Terminal
 app.use(morgan('common'));
 
-//Error-handling middleware 
+//Error-handling middleware
 app.use((err, req, res, next) => {
 	        console.log(err.stack);
-	        res.status(500).send('Sorry something went wrong');
+	        res.status(500).send('Somthing broke!');
 });
 
 //Listen for requests 
