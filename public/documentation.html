@@ -12,6 +12,17 @@
     It will provide data about movies, genres, directors.  <br>
     Using the application user will be able to sign up. Therefore the api will also deal with user interactions with the database, e.g. updating their personal information.</p>
   
+    <style>
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+      th, td {
+        padding: 5px;
+      } 
+    </style>
+    
+    
     <table class="table table-hover table-bordered">
       <h1 class="head-table">Endpoint Documentation</h1> 
       <thead>
@@ -39,7 +50,30 @@
               <td>/movies</td>
               <td>none</td>
               <td>none</td>
-              <td>A JSON object holding data about all the movies</td>
+              <td>A JSON object holding data about all the movies <br>
+                "Genre": { <br>
+                    "Name": "Drama", <br>
+                    "Description": "Dramas are serious, plot-driven presentations, portraying realistic characters, settings, <br>
+                    life situations, and stories involving intense character development and interaction." <br>
+                }, <br>
+                "Director": {<br>
+                    "Name": "Martin Scorsese",<br>
+                    "Bio": "Martin Charles Scorsese was born on November 17, 1942 in Queens, New York City, <br>
+                    to Catherine Scorsese (née Cappa) and Charles Scorsese, who both worked in Manhattan's garment district, <br>
+                    and whose families both came from Palermo, Sicily.",<br>
+                    "Birth": "1942",<br>
+                    "Death": ""<br>
+                },
+                "Actors": [],<br>
+                "_id": "6086b46f3be17c7fe498a9b5",<br>
+                "Title": "Casino",<br>
+                "Description": "A tale of greed, deception, money, power, and murder occur between two best friends: <br>
+                a mafia enforcer and a casino executive compete against each other over a gambling empire,<br>
+                 and over a fast-living and fast-loving socialite.",<br>
+                "ImagePath": "",<br>
+                "Featured": true<br>
+            }
+              </td>
           </tr>
           <tr>
               <td scope="row">Return data about a single movie by title</td>
@@ -47,7 +81,30 @@
               <td>/movies/:title</td>
               <td>title</td>
               <td>none</td>
-              <td>A JSON object holding data about the title of the requested movie</td>     
+              <td>A JSON object holding data about all the movies <br>
+                "Genre": { <br>
+                    "Name": "Drama", <br>
+                    "Description": "Dramas are serious, plot-driven presentations, portraying realistic characters, settings, <br>
+                    life situations, and stories involving intense character development and interaction." <br>
+                }, <br>
+                "Director": {<br>
+                    "Name": "Martin Scorsese",<br>
+                    "Bio": "Martin Charles Scorsese was born on November 17, 1942 in Queens, New York City, <br>
+                    to Catherine Scorsese (née Cappa) and Charles Scorsese, who both worked in Manhattan's garment district, <br>
+                    and whose families both came from Palermo, Sicily.",<br>
+                    "Birth": "1942",<br>
+                    "Death": ""<br>
+                },
+                "Actors": [],<br>
+                "_id": "6086b46f3be17c7fe498a9b5",<br>
+                "Title": "Casino",<br>
+                "Description": "A tale of greed, deception, money, power, and murder occur between two best friends: <br>
+                a mafia enforcer and a casino executive compete against each other over a gambling empire,<br>
+                 and over a fast-living and fast-loving socialite.",<br>
+                "ImagePath": "",<br>
+                "Featured": true<br>
+            }
+              </td>   
           </tr>
           <tr>
                <td scope="row">Return data about a genre (description) by name/title (e.g., "Thriller")</td>
@@ -55,7 +112,11 @@
                <td>/movies/:genre</td>
                <td>genre</td>
                <td>none</td>
-               <td><em>e.g.</em><br>Iron Man is a 2008 superhero film, based on the Marvel Comics superhero of the same name. It is the first installment in the Marvel Cinematic Universe and the first installment of Phase One.</td>
+               <td>
+                {"Name": "Thriller",
+                "Description": "Thriller film, also known as suspense film or suspense thriller, is a broad film genre that <br>
+                 involves excitement and suspense in the audience." <br>
+            }</td>
           </tr>
           <tr>
                <td scope="row">Return data about a director (bio, birth year, death year) by name</td>
@@ -63,8 +124,14 @@
                <td>/movies/director/:name</td>
                <td>name</td>
                <td>none</td>
-               <td><em>e.g.</em><br>born in 1966. He is an American actor, director, producer, and screenwriter.</td>
-
+               <td> {
+                "Name": "Martin Scorsese", <br>
+                "Bio": "Martin Charles Scorsese was born on November 17, 1942 in Queens, New York City, to Catherine Scorsese <br>
+                 (née Cappa) and Charles Scorsese, who both worked in Manhattan's garment district, and whose families both came from Palermo, Sicily.", <br>
+                "Birth": "1942",<br>
+                "Death": ""<br>
+                }<br>
+                </td>
           </tr>
            <tr>
               <td scope="row">Add a movie</td>
@@ -88,7 +155,14 @@
               <td>/users</td>
               <td>none</td>
               <td>A JSON object holding data about the users, who registerd <p>{ <br> Username: string <br> Password: string <br> Email: String <br> } </p></td>
-              <td>A response that zhe account has been created</td>
+              <td> {
+                "FavoriteMovies": [], <br>
+                "_id": "608e659b909718217abcead0", <br>
+                "Username": "Seb",<br>
+                "Password": "ba",<br>
+                "Email": "s.b.@gmail.com",<br>
+                "__v": 0 <br>
+            }</td>
           </tr>
           <tr>
               <td scope="row">Allow users to update thier info such as their username or email address</td>
@@ -96,7 +170,14 @@
               <td>/user/:Username</td>
               <td>Username</td>
               <td>A JSON object holding data about the users, who registerd <p>{ <br> Username: string <br> Password: string <br> Email: String <br> } </p></td>
-              <td>A response that contain the users update information</td>
+              <td>
+                "FavoriteMovies": [], <br>
+                "_id": "608e659b909718217abcead0", <br>
+                "Username": "Seb",<br>
+                "Password": "ba",<br>
+                "Email": "s.b.@gmail.com",<br>
+                NEW "Birthday": "1988-08-17T00:00:00.000Z"<br>
+              </td>
           </tr>
 
   
