@@ -4,6 +4,13 @@ morgan = require('morgan');
 
 const app = express();
 
+// Adding Cross-Origin Resource Sharing (CORS) & Server-Side Validation
+
+const cors = require('cors');
+app.use(cors());
+
+const { check, validationResult } = require('express-validator');
+
 // Integrating mongoose with the Rest API 
 const mongoose = require('mongoose');
 const Models = require('./models.js');
@@ -79,14 +86,27 @@ app.get('/movies/directors/:Name', passport.authenticate('jwt', { session: false
 
 // Post reques to create a new user
 
-app.post('/users', (req, res) => {
+//POST request to create a new user using server-side validation
+app.post('/users',
+[
+check('Username', 'Username is required').isLength({min:5}),
+check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+check('Password', 'Password is required').not().isEmpty(),
+check('Email', 'Email does not appear to be valid').isEmail()
+], (req, res) => {
+  let errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
+  let hashedPassword = Users.hashPassword(req.body.Password);
   Users.findOne({Username: req.body.Username}).then((user) => {
     if(user) {
       return res.status(400).send(req.body.Username + ' already exists.');
     } else {
       Users.create({
         Username: req.body.Username,
-        Password: req.body.Password,
+        Password: hashedPassword, // hashed password instead of normal password 
         Email: req.body.Email,
         Birthday: req.body.Birthday
       }).then((user) => {res.status(201).json(user)}).catch((error) => {
@@ -111,11 +131,24 @@ app.get('/users/:Username', passport.authenticate('jwt', { session: false }) , (
     });
 });
 
-app.put('/users/:Username', passport.authenticate('jwt', { session: false }) ,(req, res) => {
+// Updating user data via put request (Server-side validation & hashing)
+app.put('/users/:Username', passport.authenticate('jwt', {session: false}),
+[
+check('Username', 'Username is required').isLength({min:5}),
+check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+check('Password', 'Password is required').not().isEmpty(),
+check('Email', 'Email does not appear to be valid').isEmail()
+], (req, res) => {
+  let errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
+  let hashedPassword = Users.hashPassword(req.body.Password);
   Users.findOneAndUpdate({ Username: req.params.Username},
 { $set: {
   Username: req.body.Username,
-  Password: req.body.Password,
+  Password: hashedPassword,
   Email: req.body.Email,
   Birthday: req.body.Birthday
   }
@@ -130,6 +163,7 @@ app.put('/users/:Username', passport.authenticate('jwt', { session: false }) ,(r
     };
   });
 });
+
 
 app.post('/users/:Username/favourites/:MovieID', passport.authenticate('jwt', { session: false }) , (req, res) => {
   Users.findOneAndUpdate({ Username: req.params.Username},
