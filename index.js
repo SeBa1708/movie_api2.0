@@ -19,10 +19,7 @@ const Movies = Models.Movie;
 const Users = Models.User;
 
 // his allows Mongoose to connect to that database so it can perform CRUD operations
-mongoose.connect(process.env.CONNECTION_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+mongoose.connect(process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => console.log("MongoDB connected")).catch((err) => console.log(err));
 
 const bodyParser = require('body-parser');
 
