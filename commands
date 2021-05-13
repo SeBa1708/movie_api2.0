@@ -1,0 +1,1 @@
+mongoose.connect('mongodb+srv://Sbuser:Nurdiesge21@cluster0.adtfv.mongodb.net/myFlixDatabase?retryWrites=true&w=majority',{useNewUrlParser: true, useUnifiedTopology: true});

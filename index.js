@@ -19,11 +19,14 @@ const Movies = Models.Movie;
 const Users = Models.User;
 
 // his allows Mongoose to connect to that database so it can perform CRUD operations
-mongoose.connect('mongodb://localhost:27017/MyFlixDatabase', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(process.env.CONNECTION_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
 const bodyParser = require('body-parser');
 
-//Middleware
+//Middleware  
 
 app.use(bodyParser.json());
 
